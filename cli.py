@@ -1,7 +1,7 @@
 # Librerías estándar de análisis de datos
+
 import pandas as pd
 import numpy as np
-import pylab 
 import scipy.stats as stats
 
 # Librerías de visualización
@@ -13,6 +13,15 @@ warnings.filterwarnings("ignore")
 
 
 
+
+
+
+# Una variable para la ruta, buenas prácticas
+path_to_data = "./stroke_dataset.csv"
+
+# variables  data usuario
+
+#Mensaje de bienvenida
 
 #Mensaje de bienvenida
 print("¡Hola! Introduce los datos del nuevo paciente")
@@ -64,14 +73,27 @@ list_variables_predictoras
 
 columns = ['gender', 'age', 'hypertension', 'heart_disease', 'work_type', 'Residence_type', 'avg_glucose_level', 'bmi', 'smoking_status']
 
-df_nuevo_test = pd.DataFrame(list_variables_predictoras, columns = columns)
+# dataframe del usuario
+df_usuario_test = []
+df_usuario_test = pd.DataFrame(list_variables_predictoras, columns = columns)
 
-print( df_nuevo_test )
+# df en crudo
+print( df_usuario_test.head() )
+#print(f"columnas", df_usuario_test.columns )
+print()
+print()
 
 
+# df One Hot Encoding
+from sklearn.preprocessing import StandardScaler
 
-# Una variable para la ruta, buenas prácticas
-path_to_data = "./stroke_dataset.csv"
+scaler = StandardScaler()
+
+df_usuario_test = pd.get_dummies(df_usuario_test)
+print(f"\n----------------dummies---------------\n", df_usuario_test.head() )
+
+#df_usuario_test = pd.DataFrame(scaler.fit_transform(df_usuario_test))
+#print(f"\n-----------------test-----------------\n", df_usuario_test.head() )
 
 
 # Importamos el dataset
@@ -129,10 +151,9 @@ df.corr()
 X = df.drop("stroke", axis=1)
 y = df["stroke"]
 
-print("X:\n",X)
-print("y:\n",y)
-#XX = df_nuevo_test
-#yy = df_nuevo_test['stroke']
+#print("X:\n",X)
+#print("y:\n",y)
+
 
 X.head()
 y.head()
@@ -148,13 +169,14 @@ categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking
 
 
 from imblearn.under_sampling import RandomUnderSampler
-
 rus = RandomUnderSampler(sampling_strategy=1) # Float
-# rus = RandomUnderSampler(sampling_strategy= not minority) # String
 X, y = rus.fit_resample(X,y)
+#from imblearn import under_sampling
+#balanced = under_sampling.NearMiss()
+#X, y = balanced.fit_resample(X, y)
 
-#XX, yy = rus.fit_resample(XX,yy)
 
+#//who to connect a sqlite3?
 
 
 
@@ -171,10 +193,6 @@ transformer_categorico = ("transformer_categorico", OneHotEncoder(), categoricas
 transformer = ColumnTransformer([transformer_numerico, transformer_categorico], remainder="passthrough")
 
 
-transformer_numerico_ = ("transformer_numerico", MinMaxScaler(), numericas)
-transformer_categorico = ("transformer_categorico", OneHotEncoder(), categoricas)
-
-transformer = ColumnTransformer([transformer_numerico, transformer_categorico], remainder="passthrough")
 
 
 
@@ -185,7 +203,10 @@ transformer = ColumnTransformer([transformer_numerico, transformer_categorico], 
 
 X = transformer.fit_transform(X)
 print(X)
-#XX = transformer.fit_transform(XX)
+
+
+
+
 
 
 
@@ -205,9 +226,10 @@ pd.DataFrame(X, columns = transformer.get_feature_names_out())
 
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7, random_state = 100)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7, random_state=1)
 
-#XX_train, XX_test, yy_train, yy_test = train_test_split(XX, yy, train_size=0.7, random_state = 100)
+
+
 
 
 
@@ -229,21 +251,26 @@ import pickle
 
 
 
-
 def train_evaluate(nombre_modelo, modelo):
-        
-    mod = modelo()
+    #LogisticRegression si algo no funciona puede ser los hiperparamentros
+    mod = modelo(fit_intercept=True, penalty='l2', tol=1e-5, C=0.8, solver='lbfgs', max_iter=75,warm_start=True)
+
+#    csv(mod)
+#    json(mod)
+
+#    return carga(X_test, y_test)
+    
+
     mod.fit(X_train, y_train)
     y_predict = mod.predict(X_test)
     
-
-#   mod.fit(XX_train, yy_train)
-#  yy_predict = mod.predict(XX_test)
+    mod.fit(X_train, y_train)
+    user = mod.predict(df_usuario_test)
+    print("acuracy user", accuracy_score(y_test, y_predict) )
     
 
 
     accuracy = accuracy_score(y_test, y_predict)
-#    accuracy_y = accuracy_score(yy_test, yy_predict)
     auc = roc_auc_score(y_test, y_predict)
     recall = recall_score(y_test, y_predict)
     precision = precision_score(y_test, y_predict)
@@ -278,12 +305,17 @@ def train_evaluate(nombre_modelo, modelo):
     print(f"ConfusionMatrix_train: {confusionmatrix_train}")
     print(f"\nError: ", accuracy - accuracy_train) 
     #guardar(mod)
+    print()
+    y_pred_train = mod.predict(X_train)
+    print(user )
 
-    
+
+
 
 train_evaluate("LogisticRegression", LogisticRegression)
 
 
+########  ESTO O SE EJECUTA #############
 
 def guardar(datos):
     print('Guardado !!!')
@@ -295,12 +327,42 @@ def guardar(datos):
     file.close()
     print('\n')
 
-def carga(datos):
-    file = open('modelo_entrenado.pkl', 'rb')
 
-    data = pickle.load(file)
+
+def carga(X_test, y_test):
+
+    loaded_model = pickle.load(open('modelo_entrenado.pkl', 'rb'))
 
     print(" Cargado !!!")
-    #mod.fit(X_train, y_train)
-    #y_predict = mod.predict(X_test_nuevo)
-    print(data)
+
+    result = loaded_model.score(X_test, y_test)
+    print(result)
+
+
+def json(mod):
+    df.to_json('api.json', orient='index')
+
+
+def csv(mod): 
+    df_new_test = df.drop(columns =["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"],axis = 1)
+    print( df_new_test.head() )
+
+    # One Hot Encoding
+    df_new_test = pd.get_dummies(df_new_test,columns=["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"])
+    print( df_new_test.head() )
+
+    df_new_test[["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"]] = pd.DataFrame(scaler.fit_transform(df_new_test[["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"]]))
+
+    print( df_new_test.head() )
+    
+    #predicion para Transported para el test de datos 
+    # ADB es la variable del modelo Ada Boost Classifier/ rfc randon fores
+    df_new_test['stroke'] = mod.predict(df_new_test)
+    
+    print( df_new_test.head() )
+    
+    # Creamos el fichero submission.csv
+    pres = pd.DataFrame({'PassengerId':df['PassengerId'],'Transported': df_new_test['Transported']})
+    pres.to_csv('submission.csv', index=False)
+    print( pres.head() )
+
