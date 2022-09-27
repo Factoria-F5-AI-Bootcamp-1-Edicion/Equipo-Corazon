@@ -1,192 +1,109 @@
 # Librerías estándar de análisis de datos
 import pandas as pd
-import numpy as np
-import pylab 
-import scipy.stats as stats
-
-# Librerías de visualización
-import matplotlib.pyplot as plt
-import seaborn as sns
+import pickle
+import sklearn
+# Librerías de visualizaciónMale
 import warnings
 warnings.filterwarnings("ignore")
 
 
 
+#Mensaje de bienvenida
+print("¡Hola! Introduce los datos del nuevo paciente")
 
+#Escribimos genero
+gender = input("Por favor ingrese el genero del paciente (Male/Female): ")
 
+#Escribimos work_type
+work_type = input("\nPor favor ingrese el tipo de trabajo(Private/Self-employed/Govt_job/children): \n")
 
+##Leemos Residence_type
+residence_type = input("\nPor favor ingrese el tipo de residencia(Urban/Rural): \n")
 
+##Leemos smoking_status
+smoking_status = input("\nPor favor ingrese el tipo de fumador(formerly smoked/never smoked/smokes/Unknown): \n")
 
+##Leemos age
+age = input("\nPor favor ingrese la edad del pàciente: \n")
 
+##Leemos hypertension
+hypertension = input("\nPor favor ingrese la hipertension(1 or 0): \n")
 
-# Una variable para la ruta, buenas prácticas
-path_to_data = "./stroke_dataset.csv"
+##Leemos heart_disease
+heart_disease = input("\nPor favor ingrese si esta enfermo del corazón(1 or 0): \n")
 
+##Leemos avg_glucose_level
+avg_glucose_level = input("\nPor favor ingrese nivel medio de glucosa: \n")
 
-# Importamos el dataset
-df = pd.read_csv(path_to_data)
+##Leemos avg_glucose_level
+bmi = input("\nPor favor ingrese el BMI (Base Muscle Index): \n")
 
+#Age será un entero o binario (0 ó 1)
+age = int(age)
+#BMI, avg_glucose_level será un real, así que usamos float()
+bmi = float(bmi)
+avg_glucose_level = float(avg_glucose_level)
+#Bool
+heart_disease = int(heart_disease)
+hypertension = int(hypertension)
 
+list_variables_predictoras = [[gender, age, hypertension, heart_disease, work_type, residence_type, avg_glucose_level, bmi, smoking_status]]
 
+list_variables_predictoras
 
+#Llamo a mi funcion predictora
+#predict(variables_predictoras)
 
+list_variables_predictoras
 
+columns = ['gender', 'age', 'hypertension', 'heart_disease', 'work_type', 'Residence_type', 'avg_glucose_level', 'bmi', 'smoking_status']
 
-df["hypertension"] = df["hypertension"].astype(bool)
-df["heart_disease"] = df["heart_disease"].astype(bool)
-df["stroke"] = df["stroke"].astype(bool)
+# dataframe del usuario
+df_usuario_test = []
+df_usuario_test = pd.DataFrame(list_variables_predictoras, columns = columns)
+df = df_usuario_test
 
+print(df)
 
-
-
-
-
-df["stroke"].value_counts()
-
-
-
-df.isnull().sum(axis = 0)
-
-df_duplicadas = df[df.duplicated()]
-len(df_duplicadas)
-
-
-df.describe()
-
-
-
-
-
-
-
-categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease", "stroke"]
-numericas = ["age", "avg_glucose_level", "bmi"]
-
-
-
-
-df.corr()
-
-
-
-
-
-
-
-
-## se elimina variable objetivo, por que es la que queremos predecir
-X = df.drop("stroke", axis=1)
-y = df["stroke"]
-
-print("X:\n",X)
-print("y:\n",y)
-
-
-X.head()
-y.head()
-
-#XX.head()
-#yy.head()
-
-
-categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"]
-
-
-
-
-
-from imblearn.under_sampling import RandomUnderSampler
-rus = RandomUnderSampler(sampling_strategy=1) # Float
-X, y = rus.fit_resample(X,y)
-
-
-
-
-
-
-
-
-
-
-
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer
-
-transformer_numerico = ("transformer_numerico", MinMaxScaler(), numericas)
-transformer_categorico = ("transformer_categorico", OneHotEncoder(), categoricas)
-
-transformer = ColumnTransformer([transformer_numerico, transformer_categorico], remainder="passthrough")
-
-
-
-
-
-
-
-
-
-
-X = transformer.fit_transform(X)
-print(X)
-
-
-
-
-
-
-
-pd.DataFrame(X, columns = transformer.get_feature_names_out())
-#pd.DataFrame(XX, columns = transformer.get_feature_names_out())
-
-
-
-
-
-
-
-
-
-from sklearn.model_selection import train_test_split
-
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7, random_state = 1)
-
-
-
-
-
-from sklearn.linear_model import LogisticRegression
-
-
-
-
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import r2_score
-from sklearn.metrics import recall_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import confusion_matrix
-
-import pickle
-
-
-def csv():
+def json(df):
     # Creamos el fichero submission.csv
-    pres = pd.DataFrame({'PassengerId':test_df['PassengerId'],'Transported': df_new_test['Transported']})
-    pres.to_csv('submission.csv', index=False)
-    pres.head()
+    df.to_json('api.json', orient='index')
 
 
-def carga(X_test, y_test):
+def Carga_Transformer():
+    loaded_transformer = pickle.load(open('transformer_entrenado.pkl', 'rb'))
+    print("Cargado transformer")
+    return loaded_transformer
+   
 
+def Carga_Modelo():
     loaded_model = pickle.load(open('modelo_entrenado.pkl', 'rb'))
-
-    print(" Cargado !!!")
-
-    result = loaded_model.score(X_test, y_test)
-    print(result)
+    print(" Cargado Modelo !!!")
+    return loaded_model
 
 
+def Guardar_Transformer(transformer):
+    print('Guardado transformer !!!')
+    # Transformer 
+    file = open('transformer_entrenado.pkl', 'wb')
+    pickle.dump(transformer, file)
+    file.close()
+    print('\n')
 
-carga(X_test, y_test)
+
+def Guardar_Modelo(modelo_datos):
+    print('Guardado modelo !!!')
+    # Modelo 
+    file = open('modelo_entrenado.pkl', 'wb')
+    pickle.dump(modelo_datos, file)
+    file.close()
+    print('\n')
 
 
+transformer = Carga_Transformer()
+model = Carga_Modelo()
+df = transformer.transform(df)
+print(df)
+predict=model.predict(df)
+print(predict)
+#Guardar_Transformer(transformer)

@@ -2,11 +2,9 @@
 
 import pandas as pd
 import numpy as np
-import scipy.stats as stats
+
 
 # Librerías de visualización
-import matplotlib.pyplot as plt
-import seaborn as sns
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -92,8 +90,8 @@ scaler = StandardScaler()
 df_usuario_test = pd.get_dummies(df_usuario_test)
 print(f"\n----------------dummies---------------\n", df_usuario_test.head() )
 
-#df_usuario_test = pd.DataFrame(scaler.fit_transform(df_usuario_test))
-#print(f"\n-----------------test-----------------\n", df_usuario_test.head() )
+df_usuario_test = pd.DataFrame(scaler.fit_transform(df_usuario_test))
+print(f"\n-----------------test-----------------\n", df_usuario_test.head() )
 
 
 # Importamos el dataset
