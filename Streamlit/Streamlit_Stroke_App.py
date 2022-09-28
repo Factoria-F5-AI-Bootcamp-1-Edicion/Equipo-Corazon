@@ -6,6 +6,11 @@ import streamlit.components.v1 as stc
 import requests 
 import pandas as pd
 from streamlit_option_menu import option_menu
+import pickle
+import numpy as np 
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from predictor import predict  
 
 
 
@@ -43,95 +48,103 @@ if selected == "Home":
 
     st.subheader("Forms Tutorial")
 
-# Method 1: Context Manager Approach (with)
-with st.container():
-	firstname = st.text_input("Firstname")
-	lastname = st.text_input("lastname")
+
 
     
 
 
 
+        
+@st.cache(allow_output_mutation=True, max_entries = 1 ) 
+def get_data():
+    return []
+
+with st.form("my_form"):
+   st.write("Inside the form")
+
+   
+   gender = st.selectbox('Gender',('Male', 'Female'))
+   
+   age = st.number_input("Age")
+   
+   avg_glucose_level= st.number_input("Glucose Level")
+   
+   hypertension = st.radio("Hypertension",('Yes', 'No',))
+   if hypertension == 'Yes': 
+            hypertension = 1 
+   else: 
+            hypertension = 0
 
 
-with st.container():
-    col1, col2, col3 = st.columns(3)
-    
-    
-    
-    
+   heart_disease = st.radio("Heart Disease",('Yes', 'No',))
+   if heart_disease == 'Yes': 
+            heart_disease = 1 
+   else: 
+            heart_disease = 0
+   
+   smoking_status = st.selectbox('Smoking Status',('formerly smoked', 'smokes', 'never smoked','Unknown'))
 
-			
+   ever_married = st.radio("Married?",('Yes', 'No',))
 
-
-
-
-
-with col1:
-			option = st.selectbox(
-                'Gender',
-                ('Male', 'Female', 'Other'))
-                
-                
-with col2:
-				dob = st.date_input("Date of Birth")
-
-with col3:
-				st.number_input("Glucose Level")
-				
-
-with st.container():
-    col1, col2, col3 = st.columns(3)
-    
-    
-    hypertension = col1.radio(
-        "Hypertension",
-        ('Yes', 'No',))
-
-    with col2:
-        heart_disease = col2.radio(
-        "Heart Disease",
-        ('Yes', 'No',))
-    
-    with col3:
-        option = st.selectbox(
-                'Smoking Status',
-                ('Formerly Smoked', 'Smokes', 'Never Smoked'),key="Smoking")
-
-st.text("")
-st.text("")
-st.text("")
-
-with st.container():
-    col1, col2, col3 = st.columns(3)
-
-    married = col1.radio(
-        "Married?",
-        ('Yes', 'No',))
-    
-    with col2:
-        option = st.selectbox(
+   work_type = st.selectbox(
                 'Work Type',
-                ('Private', 'Self-employed', 'Goverment', "Stay-at-home parent"))
-    with col3:
-        option = st.selectbox(
-                'Residence',
-                ('Urban', 'Rural'))
+                ('Private', 'Self-employed', 'Govt_job', "children"))
+   
+   Residence_type = st.selectbox('Residence',('Urban', 'Rural'))
+    
+   bmi = st.number_input("bmi Level")
+
+   stroke = 0
 
 
-st.text("")
-st.text("")
-st.text("")
+# conditionals
 
-if st.button('Submit'):
-    st.write('Why hello there')
-else:
-    st.write('Goodbye') 
+
+
+
+
+    
+
+    
+
+   # Every form must have a submit button.
+   
+   if st.form_submit_button("Submit"):
+        # Datos_Usuario = [gender, ever_married, work_type, Residence_type, smoking_status, hypertension, heart_disease, age, avg_glucose_level, bmi]
+        # columns = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease", "age", "avg_glucose_level", "bmi"]
         
-    
-
-
-    
-
         
-    
+        user_data = get_data().append({"gender": gender, "ever_married": ever_married, "work_type": work_type,"Residence_type": Residence_type,"smoking_status":smoking_status,"hypertension":hypertension,"heart_disease":heart_disease,"age":age, "avg_glucose_level":avg_glucose_level, "bmi":bmi,  "stroke": stroke  })
+        
+        df = st.write(pd.DataFrame(get_data()))
+
+        # def Carga_Transformer():
+        #     loaded_transformer = pickle.load(open('transformer_entrenado.pkl', 'rb'))
+        #     print("Cargado transformer")
+        #     return loaded_transformer
+        
+
+        # def Carga_Modelo():
+        #     loaded_model = pickle.load(open('modelo_entrenado.pkl', 'rb'))
+        #     print(" Cargado Modelo !!!")
+        #     return loaded_model
+
+        # transformer = Carga_Transformer()
+        # model = Carga_Modelo()
+        # df = transformer.transform(df)
+        # print(df)
+        # predict= model.predict(df)
+        # st.write(predict)
+
+# @st.cache(allow_output_mutation=True)
+# def get_data():
+#     return []
+
+# user_id = st.text_input("User ID")
+# foo = st.slider("foo", 0, 100)
+# bar = st.slider("bar", 0, 100)
+
+# if st.button("Add row"):
+#     get_data().append({"UserID": user_id, "foo": foo, "bar": bar})
+
+# st.write(pd.DataFrame(get_data()))
