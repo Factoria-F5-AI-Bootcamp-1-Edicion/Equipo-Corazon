@@ -10,11 +10,47 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import confusion_matrix
 import pickle
 from streamlit_option_menu import option_menu
+import time
+import requests
+
+
+import streamlit as st
+from streamlit_lottie import st_lottie
+from streamlit_lottie import st_lottie_spinner
+
+
+import streamlit as st
+from streamlit_lottie import st_lottie
+from streamlit_lottie import st_lottie_spinner
+
 
 warnings.filterwarnings("ignore")
   
+#Lottie Animations
+def load_lottieurl(url: str):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
+
+
+lottie_url_hello = "https://assets7.lottiefiles.com/packages/lf20_3vbOcw.json"
+lottie_url_download = "https://assets10.lottiefiles.com/packages/lf20_q56zavhf.json"
+lottie_url_transition1= "https://assets10.lottiefiles.com/temp/lf20_tXDjQg.json"
+lottie_hello = load_lottieurl(lottie_url_hello)
+lottie_download = load_lottieurl(lottie_url_download)
+lottie_transition1 = load_lottieurl(lottie_url_transition1)
 
 st.title("¡Hola! Introduce los datos del nuevo paciente")
+st_lottie(lottie_hello, key="hello",
+    speed=1,
+    reverse=False,
+    loop=True,
+    quality="low", # medium ; high
+    
+    height=None,
+    width=None,
+    )
 
 
 
@@ -125,10 +161,18 @@ print(f"Matriz: \n {df}")
 
 predict=model.predict(df)
 
+# if st.button("Transition"):
+#     with st_lottie(lottie_transition1, key="trans1"):
+#          time.sleep(4)
 
-if st.button('Predecir'):
-    st.metric(label="Probabilidad de Ictus", value=predict, delta="30%")
 
+if st.button("Predecir"):
+    
+        
+    with st_lottie_spinner(lottie_download, key="download"):
+        time.sleep(4)
+        st.metric(label="Probabilidad de Ictus", value=predict, delta="30%")
+    
 
 
 
