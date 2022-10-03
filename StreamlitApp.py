@@ -9,7 +9,7 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import confusion_matrix
 import pickle
-from streamlit_option_menu import option_menu
+#from streamlit_option_menu import option_menu
 import time
 import requests
 
@@ -22,6 +22,8 @@ from streamlit_lottie import st_lottie_spinner
 import streamlit as st
 from streamlit_lottie import st_lottie
 from streamlit_lottie import st_lottie_spinner
+
+from xgboost import XGBClassifier
 
 
 warnings.filterwarnings("ignore")
@@ -150,8 +152,8 @@ y.head()
 categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"]
 
     
-carga_transformer = pickle.load(open('transformer_entrenado.pkl', 'rb'))    
-carga_modelo = pickle.load(open('modelo_entrenado.pkl', 'rb'))
+carga_transformer = pickle.load(open('transformer_entrenado_Felix.pkl', 'rb'))    
+carga_modelo = pickle.load(open('modelo_entrenado_Felix.pkl', 'rb'))
 
 transformer = carga_transformer
 model = carga_modelo
