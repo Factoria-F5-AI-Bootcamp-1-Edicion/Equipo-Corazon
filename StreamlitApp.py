@@ -43,6 +43,9 @@ lottie_hello = load_lottieurl(lottie_url_hello)
 lottie_download = load_lottieurl(lottie_url_download)
 lottie_transition1 = load_lottieurl(lottie_url_transition1)
 
+
+
+
 st.title("¡Hola! Introduce los datos del nuevo paciente")
 st_lottie(lottie_hello, key="hello",
     speed=1,
@@ -159,7 +162,7 @@ transformer = carga_transformer
 model = carga_modelo
 df = transformer.transform(df)
 
-print(f"Matriz: \n {df}")
+#print(f"Matriz: \n {df}")
 
 predict=model.predict_proba(df)
 #predict=model.predict(df)
@@ -175,7 +178,7 @@ if st.button("Predecir"):
     with st_lottie_spinner(lottie_download, key="download"):
         time.sleep(4)
         
-        st.write("Probabilidad de sufra Ictus", predict[0][1], "%" )
+        st.write("Probabilidad de sufra Ictus", str(round(predict[0][1],3)), " %" )
     
 
 
