@@ -49,6 +49,7 @@ lottie_download = load_lottieurl(lottie_url_download)
 lottie_transition1 = load_lottieurl(lottie_url_transition1)
 lottie_predict = load_lottieurl(lottie_url_predict)
 
+<<<<<<< HEAD
 #MENU 
 # Funcion para reducir el margen top
 def margin(): 
@@ -127,6 +128,13 @@ if selected == "Info":
 
    
     st_lottie (lottie_home, key="home",
+=======
+
+
+
+st.title("¡Hola! Introduce los datos del nuevo paciente")
+st_lottie(lottie_hello, key="hello",
+>>>>>>> 7965c7d24611796f0975d02143b14f911835aa9d
     speed=1,
     reverse=False,
     loop=True,
@@ -145,12 +153,126 @@ if selected == "Info":
 if selected== "Prediction":
     margin()
 
+<<<<<<< HEAD
     st.title("Hello!, please fill the form to make a prediction")
     st_lottie(lottie_predict, key="predict",
         speed=1,
         reverse=False,
         loop=True,
         quality="low", # medium ; high
+=======
+gender = st.selectbox('Gender',('Male', 'Female'))
+   
+age = st.number_input("Age")
+   
+avg_glucose_level= st.number_input("Glucose Level")
+   
+hypertension = st.radio("Hypertension",('Yes', 'No',))
+if hypertension == 'Yes': 
+            hypertension = 1 
+else: 
+            hypertension = 0
+
+
+heart_disease = st.radio("Heart Disease",('Yes', 'No',))
+if heart_disease == 'Yes': 
+            heart_disease = 1 
+else: 
+            heart_disease = 0
+   
+smoking_status = st.selectbox('Smoking Status',('formerly smoked', 'smokes', 'never smoked','Unknown'))
+
+ever_married = st.radio("Married?",('Yes', 'No',))
+
+
+Residence_type = st.selectbox('Residence',('Urban', 'Rural'))
+
+bmi = st.number_input("bmi Level")
+
+stroke = 0
+
+
+#def teclado():
+    # Mensaje de bienvenida
+    
+    # Metemos datos
+       
+    
+    
+age = int(age)
+bmi = float(bmi)
+avg_glucose_level = float(avg_glucose_level)
+heart_disease = int(heart_disease)
+hypertension = int(hypertension)
+stroke = int(stroke)
+ever_married = 'Yes'
+Residence_type = 'Urban'
+    
+list_variables_predictoras = [[gender,age,hypertension,heart_disease,ever_married,work_type,Residence_type,avg_glucose_level,bmi,smoking_status,stroke]]
+
+
+# se elimina stroke ya que es la variable objetivo
+columns = ['gender','age','hypertension','heart_disease','ever_married','work_type','Residence_type','avg_glucose_level','bmi','smoking_status','stroke']
+
+# se crea dataframe del usuario
+df_usuario_test = []
+df_usuario_test = pd.DataFrame(list_variables_predictoras, columns=columns)
+
+# df en crudo
+#print(df_usuario_test.head())
+#print(f"columnas", df_usuario_test.columns )
+#print (df_usuario_test)
+
+st.write(df_usuario_test)
+
+df = df_usuario_test
+
+df["hypertension"] = df["hypertension"].astype(bool)
+df["heart_disease"] = df["heart_disease"].astype(bool)
+df["stroke"] = df["stroke"].astype(bool)
+df["stroke"].value_counts()
+
+
+df.isnull().sum(axis = 0)
+
+
+categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease", "stroke"]
+numericas = ["age", "avg_glucose_level", "bmi"]
+
+
+## se elimina variable objetivo, por que es la que queremos predecir
+X = df.drop("stroke", axis=1)
+y = df["stroke"]
+
+
+
+X.head()
+y.head()
+
+
+categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"]
+
+    
+carga_transformer = pickle.load(open('transformer_entrenado_Felix.pkl', 'rb'))    
+carga_modelo = pickle.load(open('modelo_entrenado_Felix.pkl', 'rb'))
+
+transformer = carga_transformer
+model = carga_modelo
+df = transformer.transform(df)
+
+#print(f"Matriz: \n {df}")
+
+predict=model.predict_proba(df)
+#predict=model.predict(df)
+##use predict_proba instead of predict
+# if st.button("Transition"):
+#     with st_lottie(lottie_transition1, key="trans1"):
+#          time.sleep(4)
+
+
+if st.button("Predecir"):
+    
+>>>>>>> 7965c7d24611796f0975d02143b14f911835aa9d
         
         height=None,
         width=None,
@@ -196,6 +318,7 @@ if selected== "Prediction":
     #def teclado():
         # Mensaje de bienvenida
         
+<<<<<<< HEAD
         # Metemos datos
         
         
@@ -283,6 +406,9 @@ if selected== "Prediction":
             col1.metric( value=predict[0][0],label= "Probability of suffering a stroke")
             
             # st.write("Probability of suffering a stroke", predict[0][1], "%" )
+=======
+        st.write("Probabilidad de sufra Ictus", str(round(predict[0][1],3)), " %" )
+>>>>>>> 7965c7d24611796f0975d02143b14f911835aa9d
     
 
 
