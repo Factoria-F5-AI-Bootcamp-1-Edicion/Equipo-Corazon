@@ -161,8 +161,9 @@ df = transformer.transform(df)
 
 print(f"Matriz: \n {df}")
 
-predict=model.predict(df)
-
+predict=model.predict_proba(df)
+#predict=model.predict(df)
+##use predict_proba instead of predict
 # if st.button("Transition"):
 #     with st_lottie(lottie_transition1, key="trans1"):
 #          time.sleep(4)
@@ -173,7 +174,8 @@ if st.button("Predecir"):
         
     with st_lottie_spinner(lottie_download, key="download"):
         time.sleep(4)
-        st.metric(label="Probabilidad de Ictus", value=predict, delta="30%")
+        
+        st.write("Probabilidad de sufra Ictus", predict[0][1], "%" )
     
 
 
