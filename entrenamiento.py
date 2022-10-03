@@ -56,8 +56,7 @@ y = df["stroke"]
 X.head()
 y.head()
 
-#XX.head()
-#yy.head()
+
 
 
 categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"]
@@ -68,9 +67,7 @@ categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking
 from imblearn.under_sampling import RandomUnderSampler
 rus = RandomUnderSampler(sampling_strategy=1) # Float
 X, y = rus.fit_resample(X,y)
-#from imblearn import under_sampling
-#balanced = under_sampling.NearMiss()
-#X, y = balanced.fit_resample(X, y)
+
 #//who to connect a sqlite3?
 
 
@@ -89,6 +86,7 @@ transformer = ColumnTransformer([transformer_numerico, transformer_categorico], 
 
 X = transformer.fit_transform(X)
 print(X)
+
 pickle.dump(transformer, open('transformer_entrenado.pkl', 'wb'))
 
 

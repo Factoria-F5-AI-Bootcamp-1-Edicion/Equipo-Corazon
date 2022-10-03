@@ -85,18 +85,18 @@ def Carga_Modelo():
 def Guardar_Transformer(transformer):
     print('Guardado transformer !!!')
     # Transformer 
-    file = open('transformer_entrenado.pkl', 'wb')
-    pickle.dump(transformer, file)
-    file.close()
+    #file = open('transformer_entrenado.pkl', 'wb')
+    pickle.dump(transformer,open('transformer_entrenado.pkl', 'wb'))
+    #file.close()
     print('\n')
 
 
 def Guardar_Modelo(modelo_datos):
     print('Guardado modelo !!!')
     # Modelo 
-    file = open('modelo_entrenado.pkl', 'wb')
-    pickle.dump(modelo_datos, file)
-    file.close()
+    #file = open('modelo_entrenado.pkl', 'wb')
+    pickle.dump(modelo_datos, file = open('modelo_entrenado.pkl', 'wb'))
+    #file.close()
     print('\n')
 
 

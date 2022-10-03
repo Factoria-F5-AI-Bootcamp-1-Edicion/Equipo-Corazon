@@ -13,9 +13,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 from input import teclado
-# Una variable para la ruta, buenas prácticas
-#path_to_data = "./uno.csv"
-#df = pd.read_csv(path_to_data)
+
 df = teclado()
 
 
@@ -37,11 +35,6 @@ X = df.drop("stroke", axis=1)
 y = df["stroke"]
 
 
-
-X.head()
-y.head()
-
-
 categoricas = ["gender", "ever_married", "work_type", "Residence_type", "smoking_status", "hypertension", "heart_disease"]
 
     
@@ -55,6 +48,5 @@ df = transformer.transform(df)
 print(f"Matriz: \n {df}")
 
 predict=model.predict(df)
-print(f"Usted va a sufrir un Ictus: {predict}")
-
+print(f"Usted puede sufrir un Ictus: {predict}")
 
